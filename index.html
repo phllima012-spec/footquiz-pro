@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOOTQUIZ PRO - A Plataforma Definitiva</title>
+    <style>
+        :root {
+            --bg-main: #0b0f19;
+            --bg-card: #131b2e;
+            --accent: #8b5cf6;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --correct: #10b981;
+            --incorrect: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .subtitle-top {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .main-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .main-title span {
+            color: var(--accent);
+        }
+
+        .description {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid #1e293b;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .card:active {
+            transform: scale(0.98);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .card-icon {
+            font-size: 20px;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .card-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .badge-dev {
+            background-color: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .badge-soon {
+            background-color: rgba(30, 41, 59, 0.8);
+            color: #64748b;
+        }
+
+        /* Telas internas */
+        .screen {
+            display: none;
+            background-color: var(--bg-card);
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+
+        .nivel-btn {
+            background-color: #1e293b;
+            color: var(--text-main);
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 8px;
+            margin: 6px 0;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: left;
+            padding-left: 15px;
+            transition: 0.2s;
+        }
+        .nivel-facil { border-left: 5px solid #10b981; }
+        .nivel-medio { border-left: 5px solid #f59e0b; }
+        .nivel-dificil { border-left: 5px solid #f97316; }
+        .nivel-impossivel { border-left: 5px solid #ef4444; }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #a78bfa;
+            font-weight: 600;
+        }
+
+        .back-btn {
+            background: #1e293b;
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .question-box {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .option-btn {
+            width: 100%;
+            background-color: #1e293b;
+            color: #fff;
+            border: 1px solid #2d3748;
+            padding: 11px 14px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct) !important;
+            border-color: #059669 !important;
+        }
+
+        .option-btn.incorrect {
+            background-color: var(--incorrect) !important;
+            border-color: #dc2626 !important;
+        }
+
+        .next-btn {
+            display: none;
+            width: 100%;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 11px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        .dicas-box {
+            background-color: #0b0f19;
+            border: 1px solid #2d3748;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .dica-item {
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            line-height: 1.3;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            color: #475569;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 1. MENU PRINCIPAL -->
+        <div id="screen-home">
+            <header>
+                <div class="logo">FOOTQUIZ <span>PRO</span></div>
+                <div class="subtitle-top">Sua paixão pelo futebol vira desafio!</div>
+            </header>
+
+            <h1 class="main-title">CENTRAL DE <span>JOGOS</span></h1>
+            <p class="description">Escolha o seu modo de jogo unificado com múltiplos níveis de dificuldade.</p>
+
+            <div class="section-title">🏆 Modos Disponíveis</div>
+
+            <!-- Card Quiz -->
+            <div class="card" onclick="abrirSelecaoNiveisQuiz()">
+                <div class="card-header">
+                    <span class="card-icon">⚽</span>
+                    <span class="card-title">Quiz de Futebol</span>
+                </div>
+                <div class="card-desc">Perguntas variadas com sorteio randômico por rodada.</div>
+                <span class="badge badge-dev">JOGAR AGORA</span>
+            </div>
+
+            <!-- Card Quem Sou Eu -->
+            <div class="card" onclick="abrirSelecaoNiveisQuemSouEu()">
+                <div class="card-header">
+                    <span class="card-icon">🕵️‍♂️</span>
+                    <span class="card-title">Quem Sou Eu?</span>
+                </div>
+                <div class="card-desc">Adivinhe o jogador pelas dicas com níveis de dificuldade dedicados.</div>
+                <span class="badge badge-dev">JOGAR AGORA</span>
+            </div>
+
+            <!-- Outro mini-jogo -->
+            <div class="card" style="opacity: 0.6;" onclick="avisoEmBreve('Adivinhe o Escudo')">
+                <div class="card-header">
+                    <span class="card-icon">🛡️</span>
+                    <span class="card-title">Adivinhe o Escudo</span>
+                </div>
+                <div class="card-desc">Reconheça os escudos dos clubes do mundo.</div>
+                <span class="badge badge-soon">EM BREVE</span>
+            </div>
+        </div>
+
+        <!-- 2A. SELEÇÃO DE NÍVEL (QUIZ) -->
+        <div id="screen-niveis-quiz" class="screen">
+            <div class="game-header">
+                <button class="back-btn" onclick="voltarHome()">← Voltar</button>
+                <span>NÍVEL DO QUIZ</span>
+            </div>
+            <p style="font-size: 13px; color: #94a3b8; margin-bottom: 12px;">Escolha a dificuldade:</p>
+            <button class="nivel-btn nivel-facil" onclick="iniciarQuiz('facil')">🟢 Fácil (Iniciante)</button>
+            <button class="nivel-btn nivel-medio" onclick="iniciarQuiz('medio')">🟡 Médio (Entendedor)</button>
+            <button class="nivel-btn nivel-dificil" onclick="iniciarQuiz('dificil')">🟠 Difícil (Especialista)</button>
+            <button class="nivel-btn nivel-impossivel" onclick="iniciarQuiz('impossivel')">🔴 Impossível (Lenda)</button>
+        </div>
+
+        <!-- 2B. SELEÇÃO DE NÍVEL (QUEM SOU EU) -->
+        <div id="screen-niveis-quemsou" class="screen">
+            <div class="game-header">
+                <button class="back-btn" onclick="voltarHome()">← Voltar</button>
+                <span>NÍVEL DO QUEM SOU EU</span>
+            </div>
+            <p style="font-size: 13px; color: #94a3b8; margin-bottom: 12px;">Escolha a dificuldade:</p>
+            <button class="nivel-btn nivel-facil" onclick="iniciarQuemSouEu('facil')">🟢 Fácil (Craques Atuais)</button>
+            <button class="nivel-btn nivel-medio" onclick="iniciarQuemSouEu('medio')">🟡 Médio (Estrelas Europeias)</button>
+            <button class="nivel-btn nivel-dificil" onclick="iniciarQuemSouEu('dificil')">🟠 Difícil (Lendas Históricas)</button>
+            <button class="nivel-btn nivel-impossivel" onclick="iniciarQuemSouEu('impossivel')">🔴 Impossível (Hardcore)</button>
+        </div>
+
+        <!-- 3A. TELA DO JOGO QUIZ -->
+        <div id="screen-jogo-quiz" class="screen">
+            <div class="game-header">
+                <button class="back-btn" onclick="abrirSelecaoNiveisQuiz()">← Níveis</button>
+                <span id="score-quiz">Pontos: 0</span>
+            </div>
+            <div id="question-quiz" class="question-box">Carregando...</div>
+            <div id="options-quiz"></div>
+            <button id="next-quiz" class="next-btn" onclick="proximaPerguntaQuiz()">Próxima Pergunta →</button>
+        </div>
+
+        <!-- 3B. TELA DO JOGO QUEM SOU EU -->
+        <div id="screen-jogo-quemsou" class="screen">
+            <div class="game-header">
+                <button class="back-btn" onclick="abrirSelecaoNiveisQuemSouEu()">← Níveis</button>
+                <span id="score-quemsou">Pontos: 0</span>
+            </div>
+            <div class="question-box" style="font-size: 14px; margin-bottom: 10px;">Quem sou eu? Adivinhe o jogador pelas dicas:</div>
+            <div class="dicas-box" id="dicas-container"></div>
+            <div id="options-quemsou"></div>
+            <button id="next-quemsou" class="next-btn" onclick="proximaRodadaQuemSouEu()">Próximo Jogador →</button>
+        </div>
+
+        <div class="footer">FOOTQUIZ PRO © 2026</div>
+    </div>
+
+    <script>
+        // Bancos robustos e detalhados para o Quiz
+        const bancosQuiz = {
+            facil: [
+                {p: "Quem ganhou a Copa do Mundo de 2002?", o: ["Brasil", "Alemanha", "França", "Itália"], c: 0},
+                {p: "Quantos jogadores compõem um time titular em campo?", o: ["9", "10", "11", "12"], c: 2},
+                {p: "Em que país foi sediada a Copa do Mundo de 2014?", o: ["África do Sul", "Rússia", "Brasil", "Catar"], c: 2},
+                {p: "Qual cor de cartão resulta na expulsão direta?", o: ["Amarelo", "Azul", "Vermelho", "Verde"], c: 2},
+                {p: "Qual jogador é famoso mundialmente como 'CR7'?", o: ["Neymar", "Messi", "Cristiano Ronaldo", "Mbappé"], c: 2},
+                {p: "Quantos tempos tem uma partida de futebol normal?", o: ["1 tempo", "2 tempos", "3 tempos", "4 tempos"], c: 1},
+                {p: "Qual seleção tem mais títulos de Copa do Mundo masculina?", o: ["Alemanha", "Itália", "Argentina", "Brasil"], c: 3},
+                {p: "Como se chama o jogador que usa luvas e pode pegar a bola com as mãos na área?", o: ["Zagueiro", "Atacante", "Goleiro", "Lateral"], c: 2},
+                {p: "Qual o nome da penalidade máxima cobrada direto da marca da cal?", o: ["Falta", "Escanteio", "Pênalti", "Lateral"], c: 2},
+                {p: "Qual país é conhecido como o berço do futebol moderno?", o: ["Brasil", "Inglaterra", "Itália", "Alemanha"], c: 1}
+            ],
+            medio: [
+                {p: "Qual clube detém mais títulos da Liga dos Campeões?", o: ["Barcelona", "Bayern", "Milan", "Real Madrid"], c: 3},
+                {p: "Em que ano o Brasil conquistou sua primeira Copa?", o: ["1950", "1958", "1962", "1970"], c: 1},
+                {p: "Quem marcou o gol 'La Mano de Dios' em 1986?", o: ["Pelé", "Maradona", "Zico", "Platini"], c: 1},
+                {p: "Qual seleção venceu a Copa de 2010 na África do Sul?", o: ["Holanda", "Espanha", "Alemanha", "Brasil"], c: 1},
+                {p: "Em que clube o Lionel Messi estreou profissionalmente?", o: ["Real Madrid", "PSG", "Barcelona", "Newell's Old Boys"], c: 2},
+                {p: "Qual o nome da principal competição de clubes da América do Sul?", o: ["Sul-Americana", "Recopa", "Copa Libertadores", "Brasileirão"], c: 2},
+                {p: "Qual seleção ficou conhecida como a 'Laranja Mecânica' nos anos 70?", o: ["Alemanha", "Holanda", "Brasil", "Itália"], c: 1},
+                {p: "Em qual país foi realizada a Copa do Mundo de 2006?", o: ["Alemanha", "Japão", "França", "África do Sul"], c: 0},
+                {p: "Quem é o maior artilheiro histórico da Seleção Brasileira em jogos oficiais?", o: ["Pelé", "Ronaldo Fenômeno", "Neymar", "Zico"], c: 2},
+                {p: "Qual estádio é conhecido como o templo do futebol brasileiro?", o: ["Morumbi", "Mineirão", "Maracanã", "Arena Corinthians"], c: 2}
+            ],
+            dificil: [
+                {p: "Quem foi o artilheiro da Copa do Mundo de 1994?", o: ["Romário", "Baggio", "Hristo Stoichkov", "Salenko"], c: 3},
+                {p: "Qual seleção surpreendeu ao vencer a Eurocopa de 2004?", o: ["Grécia", "Portugal", "República Tcheca", "Dinamarca"], c: 0},
+                {p: "Qual clube português foi campeão invicto da Champions em 2004 com Mourinho?", o: ["Benfica", "Sporting", "Porto", "Braga"], c: 2},
+                {p: "Quem detém o recorde de gols em um único ano calendário (91 gols)?", o: ["Pelé", "Gerd Müller", "Cristiano Ronaldo", "Lionel Messi"], c: 3},
+                {p: "Qual país eliminou o Brasil nas quartas de final da Copa de 2006?", o: ["França", "Inglaterra", "Croácia", "Itália"], c: 0},
+                {p: "Em que ano o Leicester City conquistou de forma incrível a Premier League?", o: ["2014", "2016", "2018", "2020"], c: 1},
+                {p: "Qual goleiro é famoso por inventar a jogada da 'escorpião'?", o: ["Neuer", "Buffon", "René Higuita", "Chilavert"], c: 2},
+                {p: "Quantas Champions League o técnico Carlo Ancelotti conquistou até 2024?", o: ["2", "3", "4", "5"], c: 3}
+            ],
+            impossivel: [
+                {p: "Qual jogador perdeu o pênalti decisivo pela Itália na final da Copa de 1994?", o: ["Franco Baresi", "Roberto Baggio", "Roberto Donadoni", "Gianluca Pagliuca"], c: 1},
+                {p: "Qual foi o único time fora do eixo sudeste-sul a vencer o Campeonato Brasileiro na década de 1980?", o: ["Bahia (1988)", "Sport (1987)", "Coritiba (1985)", "Atlético-MG"], c: 1},
+                {p: "Em que ano o modesto Nottingham Forest ganhou sua primeira Liga dos Campeões?", o: ["1977", "1979", "1981", "1983"], c: 1},
+                {p: "Qual jogador detém o recorde de gols marcados em uma única edição de Copa do Mundo (13 gols em 1958)?", o: ["Just Fontaine", "Pelé", "Klose", "Gerd Müller"], c: 0},
+                {p: "Qual clube foi o primeiro campeão da história do Campeonato Brasileiro (Taça Brasil de 1959)?", o: ["Santos", "Palmeiras", "Bahia", "Vasco"], c: 2}
+            ]
+        };
+
+        // Bancos detalhados e separados por nível para o "Quem Sou Eu?"
+        const bancosQuemSouEu = {
+            facil: [
+                {
+                    dicas: ["1. Fui revelado pelo Santos.", "2. Ganhei a Libertadores de 2011.", "3. Joguei no Barcelona e no PSG."],
+                    opcoes: ["Neymar", "Gabigol", "Robinho", "Rodrygo"],
+                    correta: 0
+                },
+                {
+                    dicas: ["1. Sou brasileiro e atuo no Real Madrid.", "2. Marquei gols em finais de Champions League.", "3. Meu nome começa com a letra V."],
+                    opcoes: ["Rodrygo", "Vinícius Júnior", "Casemiro", "Endrick"],
+                    correta: 1
+                },
+                {
+                    dicas: ["1. Fui o camisa 9 da Seleção Brasileira na Copa do Mundo de 2022.", "2. Joguei no Tottenham e Everton.", "3. Atualmente jogo no futebol inglês."],
+                    opcoes: ["Gabriel Jesus", "Richarlison", "Roberto Firmino", "Antony"],
+                    correta: 1
+                },
+                {
+                    dicas: ["1. Sou considerado um dos melhores meio-campistas belgas da história recente.", "2. Fui ídolo máximo no Manchester City.", "3. Conhecido pelas assistências perfeitas."],
+                    opcoes: ["Eden Hazard", "Kevin De Bruyne", "Romelu Lukaku", "Thibaut Courtois"],
+                    correta: 1
+                }
+            ],
+            medio: [
+                {
+                    dicas: ["1. Sou o maior artilheiro da história da Champions League.", "2. Joguei no Real Madrid e Manchester United.", "3. Conquistei múltiplos títulos de Eurocopa e Champions."],
+                    opcoes: ["Lionel Messi", "Cristiano Ronaldo", "Karim Benzema", "Robert Lewandowski"],
+                    correta: 1
+                },
+                {
+                    dicas: ["1. Ganhei a Copa do Mundo de 2022 pela Argentina.", "2. Fui ídolo histórico do Barcelona.", "3. Conquistei várias Bolas de Ouro ao longo da carreira."],
+                    opcoes: ["Maradona", "Di María", "Lionel Messi", "Julián Álvarez"],
+                    correta: 2
+                },
+                {
+                    dicas: ["1. Sou um atacante norueguês imparável.", "2. Quebrei recordes de gols na Premier League pelo Manchester City.", "3. Conhecido por sua força física e velocidade."],
+                    opcoes: ["Haaland", "Ødegaard", "Sørloth", " Haaland Jr"],
+                    correta: 0
+                },
+                {
+                    dicas: ["1. Sou francês, campeão do mundo em 2018.", "2. Joguei no Atlético de Madrid e Barcelona.", "3. Conhecido como 'Griezmann'."],
+                    opcoes: ["Mbappé", "Giroud", "Antoine Griezmann", "Dembélé"],
+                    correta: 2
+                }
+            ],
+            dificil: [
+                {
+                    dicas: ["1. Fui campeão do mundo pelo Brasil em 2002.", "2. Joguei no Real Madrid, Milan e Inter de Milão.", "3. Conhecido mundialmente como o Fenômeno."],
+                    opcoes: ["Romário", "Ronaldinho Gaúcho", "Ronaldo Fenômeno", "Kaká"],
+                    correta: 2
+                },
+                {
+                    dicas: ["1. Ganhei a Bola de Ouro em 2007 vestindo a camisa do Milan.", "2. Fui ídolo absoluto do São Paulo e Seleção Brasileira.", "3. Meio-campista extremamente elegante e letal."],
+                    opcoes: ["Cafu", "Kaká", "Rivaldo", "Seedorf"],
+                    correta: 1
+                },
+                {
+                    dicas: ["1. Sou francês e artilheiro histórico do Arsenal.", "2. Fui campeão do mundo em 1998 e da Euro em 2000.", "3. Uma verdadeira lenda da Premier League."],
+                    opcoes: ["Zidane", "Thierry Henry", "Ribéry", "Benzema"],
+                    correta: 1
+                },
+                {
+                    dicas: ["1. Sou italiano, maestro do meio-campo.", "2. Venci a Copa do Mundo de 2006 e duas Champions pelo Milan.", "3. Conhecido pela classe inconfundível."],
+                    opcoes: ["Del Piero", "Pirlo", "Totti", "Gattuso"],
+                    correta: 1
+                }
+            ],
+            impossivel: [
+                {
+                    dicas: ["1. Fui o capitão da Itália na conquista da Copa do Mundo de 2006.", "2. Joguei no Parma, Inter de Milão e Real Madrid.", "3. Sou um dos raros zagueiros a vencer a Bola de Ouro."],
+                    opcoes: ["Maldini", "Fabio Cannavaro", "Nesta", "Buffon"],
+                    correta: 1
+                },
+                {
+                    dicas: ["1. Fui o artilheiro holandês da Eurocopa histórica de 1988.", "2. Ídolo máximo do Milan na era holandesa.", "3. Conquistou múltiples prêmios de Ballon d'Or."],
+                    opcoes: ["Marco van Basten", "Bergkamp", "Ruud Gullit", "Kluivert"],
+                    correta: 0
+                },
+                {
+                    dicas: ["1. Fui técnico lendário do Manchester United por mais de 26 anos.", "2. Conquistei treze títulos da Premier League.", "3. Tive o privilégio de comandar Cristiano Ronaldo em seu início."],
+                    opcoes: ["Arsène Wenger", "Sir Alex Ferguson", "Pep Guardiola", "Carlo Ancelotti"],
+                    correta: 1
+                }
+            ]
+        };
+
+        // Variáveis globais de controle
+        let nivelAtual = 'facil';
+        let perguntasRodadaQuiz = [];
+        let perguntaAtualQuiz = 0;
+        let pontuacaoQuiz = 0;
+        let respondidoQuiz = false;
+
+        let perguntasRodadaQuemSouEu = [];
+        let indiceQuemSouEu = 0;
+        let pontuacaoQuemSouEu = 0;
+        let respondidoQuemSouEu = false;
+
+        function voltarHome() {
+            document.getElementById('screen-niveis-quiz').style.display = 'none';
+            document.getElementById('screen-niveis-quemsou').style.display = 'none';
+            document.getElementById('screen-jogo-quiz').style.display = 'none';
+            document.getElementById('screen-jogo-quemsou').style.display = 'none';
+            document.getElementById('screen-home').style.display = 'block';
+        }
+
+        function avisoEmBreve(nomeJogo) {
+            alert(`O modo "${nomeJogo}" está chegando em breve! ⚽🔥`);
+        }
+
+        // --- LÓGICA DO QUIZ ---
+        function abrirSelecaoNiveisQuiz() {
+            document.getElementById('screen-home').style.display = 'none';
+            document.getElementById('screen-niveis-quiz').style.display = 'block';
+        }
+
+        function iniciarQuiz(nivel) {
+            nivelAtual = nivel;
+            perguntaAtualQuiz = 0;
+            pontuacaoQuiz = 0;
+            
+            const copiaBanco = [...bancosQuiz[nivel]];
+            copiaBanco.sort(() => Math.random() - 0.5);
+            perguntasRodadaQuiz = copiaBanco.slice(0, 5);
+
+            document.getElementById('score-quiz').innerText = `Pontos: 0`;
+            document.getElementById('screen-niveis-quiz').style.display = 'none';
+            document.getElementById('screen-jogo-quiz').style.display = 'block';
+            carregarPerguntaQuiz();
+        }
+
+        function carregarPerguntaQuiz() {
+            respondidoQuiz = false;
+            document.getElementById('next-quiz').style.display = 'none';
+
+            const q = perguntasRodadaQuiz[perguntaAtualQuiz];
+            document.getElementById('question-quiz').innerText = `(${perguntaAtualQuiz + 1}/5) ${q.p}`;
+
+            const container = document.getElementById('options-quiz');
+            container.innerHTML = '';
+
+            q.o.forEach((opcao, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opcao;
+                btn.onclick = () => verificarRespostaQuiz(index, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function verificarRespostaQuiz(selecionada, elementoBtn) {
+            if (respondidoQuiz) return;
+            respondidoQuiz = true;
+
+            const q = perguntasRodadaQuiz[perguntaAtualQuiz];
+            const botoes = document.querySelectorAll('#options-quiz .option-btn');
+
+            if (selecionada === q.c) {
+                elementoBtn.classList.add('correct');
+                pontuacaoQuiz += 20;
+                document.getElementById('score-quiz').innerText = `Pontos: ${pontuacaoQuiz}`;
+            } else {
+                elementoBtn.classList.add('incorrect');
+                botoes[q.c].classList.add('correct');
+            }
+
+            botoes.forEach(b => b.style.cursor = 'default');
+
+            const btnNext = document.getElementById('next-quiz');
+            if (perguntaAtualQuiz < perguntasRodadaQuiz.length - 1) {
+                btnNext.innerText = 'Próxima Pergunta →';
+                btnNext.style.display = 'block';
+            } else {
+                btnNext.innerText = 'Fim da Rodada! Jogar Novamente';
+                btnNext.style.display = 'block';
+                btnNext.onclick = () => iniciarQuiz(nivelAtual);
+            }
+        }
+
+        function proximaPerguntaQuiz() {
+            perguntaAtualQuiz++;
+            const btnNext = document.getElementById('next-quiz');
+            btnNext.onclick = proximaPerguntaQuiz;
+            carregarPerguntaQuiz();
+        }
+
+        // --- LÓGICA DO QUEM SOU EU ---
+        function abrirSelecaoNiveisQuemSouEu() {
+            document.getElementById('screen-home').style.display = 'none';
+            document.getElementById('screen-niveis-quemsou').style.display = 'block';
+        }
+
+        function iniciarQuemSouEu(nivel) {
+            nivelAtual = nivel;
+            indiceQuemSouEu = 0;
+            pontuacaoQuemSouEu = 0;
+
+            const copiaBanco = [...bancosQuemSouEu[nivel]];
+            copiaBanco.sort(() => Math.random() - 0.5);
+            perguntasRodadaQuemSouEu = copiaBanco.slice(0, 3); // 3 rodadas por bateria
+
+            document.getElementById('score-quemsou').innerText = `Pontos: 0`;
+            document.getElementById('screen-niveis-quemsou').style.display = 'none';
+            document.getElementById('screen-jogo-quemsou').style.display = 'block';
+            carregarRodadaQuemSouEu();
+        }
+
+        function carregarRodadaQuemSouEu() {
+            respondidoQuemSouEu = false;
+            document.getElementById('next-quemsou').style.display = 'none';
+
+            const item = perguntasRodadaQuemSouEu[indiceQuemSouEu];
+            const dicasContainer = document.getElementById('dicas-container');
+            dicasContainer.innerHTML = '';
+
+            item.dicas.forEach(dica => {
+                const div = document.createElement('div');
+                div.className = 'dica-item';
+                div.innerText = dica;
+                dicasContainer.appendChild(div);
+            });
+
+            const optionsContainer = document.getElementById('options-quemsou');
+            optionsContainer.innerHTML = '';
+
+            item.opcoes.forEach((opcao, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opcao;
+                btn.onclick = () => verificarRespostaQuemSouEu(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function verificarRespostaQuemSouEu(selecionada, elementoBtn) {
+            if (respondidoQuemSouEu) return;
+            respondidoQuemSouEu = true;
+
+            const item = perguntasRodadaQuemSouEu[indiceQuemSouEu];
+            const botoes = document.querySelectorAll('#options-quemsou .option-btn');
+
+            if (selecionada === item.correta) {
+                elementoBtn.classList.add('correct');
+                pontuacaoQuemSouEu += 30;
+                document.getElementById('score-quemsou').innerText = `Pontos: ${pontuacaoQuemSouEu}`;
+            } else {
+                elementoBtn.classList.add('incorrect');
+                botoes[item.correta].classList.add('correct');
+            }
+
+            botoes.forEach(b => b.style.cursor = 'default');
+
+            const btnNext = document.getElementById('next-quemsou');
+            if (indiceQuemSouEu < perguntasRodadaQuemSouEu.length - 1) {
+                btnNext.innerText = 'Próximo Jogador →';
+                btnNext.style.display = 'block';
+            } else {
+                btnNext.innerText = 'Fim do Desafio! Jogar Novamente';
+                btnNext.style.display = 'block';
+                btnNext.onclick = () => iniciarQuemSouEu(nivelAtual);
+            }
+        }
+
+        function proximaRodadaQuemSouEu() {
+            indiceQuemSouEu++;
+            const btnNext = document.getElementById('next-quemsou');
+            btnNext.onclick = proximaRodadaQuemSouEu;
+            carregarRodadaQuemSouEu();
+        }
+    </script>
+</body>
+</html>
