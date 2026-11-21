@@ -238,6 +238,56 @@
             margin-top: 12px;
         }
 
+        /* Estilização da Tela de Resultado com Estrelas */
+        .result-container {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .result-stars {
+            font-size: 32px;
+            letter-spacing: 4px;
+            margin: 15px 0;
+        }
+
+        .result-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .btn-primary-custom {
+            width: 100%;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-outline-custom {
+            width: 100%;
+            background: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-outline-custom:hover {
+            background-color: rgba(139, 92, 246, 0.1);
+        }
+
         .dicas-box {
             background-color: #0b0f19;
             border: 1px solid #2d3748;
@@ -496,12 +546,12 @@
         let nivelAtual = 'facil';
         let perguntasRodadaQuiz = [];
         let perguntaAtualQuiz = 0;
-        let pontuacaoQuiz = 0;
+        let acertosQuiz = 0;
         let respondidoQuiz = false;
 
         let perguntasRodadaQuemSouEu = [];
         let indiceQuemSouEu = 0;
-        let pontuacaoQuemSouEu = 0;
+        let acertosQuemSouEu = 0;
         let respondidoQuemSouEu = false;
 
         function voltarHome() {
@@ -525,13 +575,13 @@
         function iniciarQuiz(nivel) {
             nivelAtual = nivel;
             perguntaAtualQuiz = 0;
-            pontuacaoQuiz = 0;
+            acertosQuiz = 0;
             
             const copiaBanco = [...bancosQuiz[nivel]];
             copiaBanco.sort(() => Math.random() - 0.5);
             perguntasRodadaQuiz = copiaBanco.slice(0, 5);
 
-            document.getElementById('score-quiz').innerText = `Pontos: 0`;
+            document.getElementById('score-quiz').innerText = `Pergunta 1/5`;
             document.getElementById('screen-niveis-quiz').style.display = 'none';
             document.getElementById('screen-jogo-quiz').style.display = 'block';
             carregarPerguntaQuiz();
@@ -542,7 +592,8 @@
             document.getElementById('next-quiz').style.display = 'none';
 
             const q = perguntasRodadaQuiz[perguntaAtualQuiz];
-            document.getElementById('question-quiz').innerText = `(${perguntaAtualQuiz + 1}/5) ${q.p}`;
+            document.getElementById('score-quiz').innerText = `Pergunta ${perguntaAtualQuiz + 1}/5`;
+            document.getElementById('question-quiz').innerText = q.p;
 
             const container = document.getElementById('options-quiz');
             container.innerHTML = '';
@@ -565,8 +616,7 @@
 
             if (selecionada === q.c) {
                 elementoBtn.classList.add('correct');
-                pontuacaoQuiz += 20;
-                document.getElementById('score-quiz').innerText = `Pontos: ${pontuacaoQuiz}`;
+                acertosQuiz++;
             } else {
                 elementoBtn.classList.add('incorrect');
                 botoes[q.c].classList.add('correct');
@@ -579,9 +629,9 @@
                 btnNext.innerText = 'Próxima Pergunta →';
                 btnNext.style.display = 'block';
             } else {
-                btnNext.innerText = 'Fim da Rodada! Jogar Novamente';
+                btnNext.innerText = 'Ver Resultado';
                 btnNext.style.display = 'block';
-                btnNext.onclick = () => iniciarQuiz(nivelAtual);
+                btnNext.onclick = mostrarResultadoQuiz;
             }
         }
 
@@ -590,6 +640,33 @@
             const btnNext = document.getElementById('next-quiz');
             btnNext.onclick = proximaPerguntaQuiz;
             carregarPerguntaQuiz();
+        }
+
+        function mostrarResultadoQuiz() {
+            const porcentagem = (acertosQuiz / 5) * 100;
+            let estrelas = '⭐';
+            if (porcentagem >= 80) estrelas = '⭐⭐⭐⭐⭐';
+            else if (porcentagem >= 60) estrelas = '⭐⭐⭐⭐';
+            else if (porcentagem >= 40) estrelas = '⭐⭐⭐';
+            else if (porcentagem >= 20) estrelas = '⭐⭐';
+            else estrelas = '⭐';
+
+            document.getElementById('score-quiz').innerText = `Fim de Jogo`;
+            const container = document.getElementById('screen-jogo-quiz');
+            container.innerHTML = `
+                <div class="game-header">
+                    <button class="back-btn" onclick="abrirSelecaoNiveisQuiz()">← Níveis</button>
+                    <span>FIM DE PARTIDA</span>
+                </div>
+                <div class="result-container">
+                    <div class="main-title">FIM DO <span>QUIZ!</span></div>
+                    <div class="result-text">Você acertou ${acertosQuiz} de 5 perguntas (${porcentagem}%).</div>
+                    <div class="result-stars">${estrelas}</div>
+                    
+                    <button class="btn-primary-custom" onclick="iniciarQuiz(nivelAtual)">Jogar mais uma partida</button>
+                    <button class="btn-outline-custom" onclick="abrirSelecaoNiveisQuiz()">Trocar a partida</button>
+                </div>
+            `;
         }
 
         // --- LÓGICA DO QUEM SOU EU ---
@@ -601,13 +678,13 @@
         function iniciarQuemSouEu(nivel) {
             nivelAtual = nivel;
             indiceQuemSouEu = 0;
-            pontuacaoQuemSouEu = 0;
+            acertosQuemSouEu = 0;
 
             const copiaBanco = [...bancosQuemSouEu[nivel]];
             copiaBanco.sort(() => Math.random() - 0.5);
-            perguntasRodadaQuemSouEu = copiaBanco.slice(0, 3); // 3 rodadas por bateria
+            perguntasRodadaQuemSouEu = copiaBanco.slice(0, 5); // 5 rodadas
 
-            document.getElementById('score-quemsou').innerText = `Pontos: 0`;
+            document.getElementById('score-quemsou').innerText = `Jogador 1/5`;
             document.getElementById('screen-niveis-quemsou').style.display = 'none';
             document.getElementById('screen-jogo-quemsou').style.display = 'block';
             carregarRodadaQuemSouEu();
@@ -618,6 +695,8 @@
             document.getElementById('next-quemsou').style.display = 'none';
 
             const item = perguntasRodadaQuemSouEu[indiceQuemSouEu];
+            document.getElementById('score-quemsou').innerText = `Jogador ${indiceQuemSouEu + 1}/5`;
+
             const dicasContainer = document.getElementById('dicas-container');
             dicasContainer.innerHTML = '';
 
@@ -649,8 +728,7 @@
 
             if (selecionada === item.correta) {
                 elementoBtn.classList.add('correct');
-                pontuacaoQuemSouEu += 30;
-                document.getElementById('score-quemsou').innerText = `Pontos: ${pontuacaoQuemSouEu}`;
+                acertosQuemSouEu++;
             } else {
                 elementoBtn.classList.add('incorrect');
                 botoes[item.correta].classList.add('correct');
@@ -663,9 +741,9 @@
                 btnNext.innerText = 'Próximo Jogador →';
                 btnNext.style.display = 'block';
             } else {
-                btnNext.innerText = 'Fim do Desafio! Jogar Novamente';
+                btnNext.innerText = 'Ver Resultado';
                 btnNext.style.display = 'block';
-                btnNext.onclick = () => iniciarQuemSouEu(nivelAtual);
+                btnNext.onclick = mostrarResultadoQuemSouEu;
             }
         }
 
@@ -675,6 +753,34 @@
             btnNext.onclick = proximaRodadaQuemSouEu;
             carregarRodadaQuemSouEu();
         }
+
+        function mostrarResultadoQuemSouEu() {
+            const porcentagem = (acertosQuemSouEu / 5) * 100;
+            let estrelas = '⭐';
+            if (porcentagem >= 80) estrelas = '⭐⭐⭐⭐⭐';
+            else if (porcentagem >= 60) estrelas = '⭐⭐⭐⭐';
+            else if (porcentagem >= 40) estrelas = '⭐⭐⭐';
+            else if (porcentagem >= 20) estrelas = '⭐⭐';
+            else estrelas = '⭐';
+
+            document.getElementById('score-quemsou').innerText = `Fim de Jogo`;
+            const container = document.getElementById('screen-jogo-quemsou');
+            container.innerHTML = `
+                <div class="game-header">
+                    <button class="back-btn" onclick="abrirSelecaoNiveisQuemSouEu()">← Níveis</button>
+                    <span>FIM DE PARTIDA</span>
+                </div>
+                <div class="result-container">
+                    <div class="main-title">FIM DO <span>DESAFIO!</span></div>
+                    <div class="result-text">Você acertou ${acertosQuemSouEu} de 5 jogadores (${porcentagem}%).</div>
+                    <div class="result-stars">${estrelas}</div>
+                    
+                    <button class="btn-primary-custom" onclick="iniciarQuemSouEu(nivelAtual)">Jogar mais uma partida</button>
+                    <button class="btn-outline-custom" onclick="abrirSelecaoNiveisQuemSouEu()">Trocar a partida</button>
+                </div>
+            `;
+        }
     </script>
 </body>
 </html>
+
